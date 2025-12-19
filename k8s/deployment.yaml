@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-login-app
+  labels:
+    app: flask-login
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-login
+  template:
+    metadata:
+      labels:
+        app: flask-login
+    spec:
+      containers:
+      - name: flask-login
+        image: flask-login-app:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        env:
+        - name: SECRET_KEY
+          value: "k8s-secret"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
