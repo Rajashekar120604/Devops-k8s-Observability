@@ -1,18 +1,18 @@
 apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+kind: PodMonitor
 metadata:
-  name: flask-login-monitor
+  name: flask-login-podmonitor
   namespace: monitoring
   labels:
-    release: monitoring     # 🔥 THIS IS THE KEY
+    release: monitoring
 spec:
-  selector:
-    matchLabels:
-      app: flask-login
   namespaceSelector:
     matchNames:
       - default
-  endpoints:
+  selector:
+    matchLabels:
+      app: flask-login
+  podMetricsEndpoints:
     - port: http
       path: /metrics
       interval: 15s

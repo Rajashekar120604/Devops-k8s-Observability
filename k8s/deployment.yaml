@@ -15,23 +15,24 @@ spec:
         app: flask-login
     spec:
       containers:
-      - name: flask-login
-        image: flask-login-app:1.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 5000
-        env:
-        - name: SECRET_KEY
-          value: "k8s-secret"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        - name: flask-login
+          image: flask-login-app:2.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SECRET_KEY
+              value: k8s-secret
+          ports:
+            - name: http          # 🔥 REQUIRED
+              containerPort: 5000 # 🔥 REQUIRED
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
