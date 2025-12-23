@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: flask-login
-          image: flask-login-app:2.0
+          image: flask-login-app:3.0
           imagePullPolicy: IfNotPresent
           env:
             - name: SECRET_KEY
