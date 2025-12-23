@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: flask-login-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: flask-login.rules
+      rules:
+
+        # 1️⃣ App Down Alert
+        - alert: FlaskAppDown
+          expr: max(up{job="monitoring/flask-login-podmonitor"}) == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Flask login app is DOWN"
+            description: "No Flask login pods are responding for more than 1 minute."
+
+        # 2️⃣ High Login Failure Rate
+        - alert: HighLoginFailureRate
+          expr: |
+            (
+              sum(rate(login_attempts_total{result="failure"}[2m]))
+              /
+              clamp_min(sum(rate(login_attempts_total[2m])), 0.01)
+            ) > 0.5
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High login failure rate detected"
+            description: "More than 50% of login attempts are failing in the last 2 minutes."
