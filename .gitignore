@@ -1,6 +1,56 @@
-__pycache__/
-*.pyc
+# =====================
+# Secrets & credentials
+# =====================
 .env
-.terraform/
+.env.*
+*.env
+credentials.yml
+vars.yml
+secrets.yml
+
+# Docker credentials
+docker-config.json
+.dockerconfigjson
+
+# Kubernetes configs
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+
+# =====================
+# Concourse
+# =====================
+keys/
+.flyrc
+.fly/
+
+# =====================
+# Docker
+# =====================
+image/
+*.tar
+*.tgz
+.docker/
+
+# =====================
+# Kubernetes
+# =====================
+k8s/generated/
+*.tmp
+
+# =====================
+# Logs & observability
+# =====================
+logs/
+*.log
+.elastic/
+.kibana/
+
+# =====================
+# OS / Editor
+# =====================
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
+*.swp
