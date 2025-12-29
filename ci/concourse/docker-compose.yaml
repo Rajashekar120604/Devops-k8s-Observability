@@ -1,0 +1,56 @@
+services:
+  concourse-db:
+    image: postgres:15
+    container_name: concourse-db
+    environment:
+      POSTGRES_DB: concourse
+      POSTGRES_USER: concourse
+      POSTGRES_PASSWORD: concourse
+    volumes:
+      - concourse-db:/var/lib/postgresql/data
+
+  concourse-web:
+    image: concourse/concourse:7.11
+    container_name: concourse-web
+    command: web
+    ports:
+      - "8080:8080"
+      - "2222:2222"
+    volumes:
+      - ./keys:/keys
+    environment:
+      CONCOURSE_EXTERNAL_URL: http://localhost:8080
+
+      CONCOURSE_POSTGRES_HOST: concourse-db
+      CONCOURSE_POSTGRES_USER: concourse
+      CONCOURSE_POSTGRES_PASSWORD: concourse
+      CONCOURSE_POSTGRES_DATABASE: concourse
+
+      # 🔑 TSA – THIS WAS MISSING
+      CONCOURSE_TSA_HOST_KEY: /keys/tsa_host_key
+      CONCOURSE_TSA_AUTHORIZED_KEYS: /keys/worker_key.pub
+      CONCOURSE_TSA_LISTEN_ADDRESS: 0.0.0.0:2222
+
+      # REQUIRED IN 7.x
+      CONCOURSE_ADD_LOCAL_USER: test:test
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+
+  concourse-worker:
+    image: concourse/concourse:7.11
+    container_name: concourse-worker
+    command: worker
+    privileged: true
+    volumes:
+      - ./keys:/keys
+    environment:
+      # 🔑 TSA connection
+      CONCOURSE_TSA_HOST: concourse-web:2222
+      CONCOURSE_TSA_PUBLIC_KEY: /keys/tsa_host_key.pub
+      CONCOURSE_TSA_WORKER_PRIVATE_KEY: /keys/worker_key
+
+      # 🚀 CRITICAL FIX FOR RANCHER DESKTOP
+      CONCOURSE_RUNTIME: containerd
+      CONCOURSE_CONTAINERD_DNS_SERVER: 8.8.8.8
+
+volumes:
+  concourse-db:
